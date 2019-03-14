@@ -54,7 +54,22 @@ public class APIServerVerticle extends AbstractVerticle implements Handler<HttpS
     path = request.path();
 
     if (request.path().equals("/")) {
-      resp.sendFile("ui/landing/landing.html");
+      resp.sendFile("ui/landing/index.html");
+      return;
+    }
+
+    if (request.path().equals("/search")) {
+      resp.sendFile("ui/search/index.html");
+      return;
+    }
+
+    if (request.path().equals("/search/attribute")) {
+      resp.sendFile("ui/search/attribute/index.html");
+      return;
+    }
+
+    if (request.path().contains("assets")) {
+      resp.sendFile("ui/" + request.path());
       return;
     }
 
