@@ -290,7 +290,17 @@
       }
     }*/
 
-    $.get( "/cat/search", function( data ) {
+    $.urlParam = function(name){
+  	var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+  	return results[1] || 0;
+  	}
+
+  	$.urlParam('tags'); // name
+  	console.log(decodeURIComponent($.urlParam('tags')).replace('(','').replace(')',''));  
+      // console.log("l",localStorage.getItem("data"))
+
+
+    $.get( "/search/attribute?tags="+decodeURIComponent($.urlParam('tags')), function( data ) {
       var seen_tags_set = [];
       var tag_cloud_html = [];
       data=JSON.parse(data)
@@ -298,7 +308,7 @@
         for (var tag_item_index = 0; tag_item_index < data[item_index]['tags'].length-1; tag_item_index++) {
           if(!seen_tags_set.includes(data[item_index]['tags'][tag_item_index])){
             seen_tags_set.push(data[item_index]['tags'][tag_item_index])
-            tag_cloud_html.push(`<a href="" target="_blank"><button style="margin:10px;" type="button" class="btn btn-default">`+data[item_index]['tags'][tag_item_index]+`</button></a>`)
+            tag_cloud_html.push(`<a href="/search/attribute?tags=(`+data[item_index]['tags'][tag_item_index]+`)" target="_blank"><button style="margin:10px;" type="button" class="btn btn-default">`+data[item_index]['tags'][tag_item_index]+`</button></a>`)
           }
         }
       }
@@ -312,10 +322,7 @@
       localStorage.setItem("data",data);
     }
 
-    });
-
-
-    // console.log("l",localStorage.getItem("data"))
+    });    
 
   </script>
 </body>
