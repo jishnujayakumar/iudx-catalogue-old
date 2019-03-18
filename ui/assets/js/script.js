@@ -8,7 +8,7 @@
     });
 
     function urlify(text) {
-      var urlRegex = /(https?:\/\/[^\s]+)/g;
+      var urlRegex = /(https?:\/\/[^"]+)/g;
       return text.replace(urlRegex, '<a href="$1" target="_blank" style="text-decoration:underline">$1</a>')
     }
 
@@ -30,6 +30,7 @@
             } else if (/null/.test(match)) {
                 cls = 'color: magenta;';
             }
+            // console.log(cls, match)
             return '<span style="' + cls + '">' + urlify(match) + '</span>';
         });
         // return urlify(json);
@@ -71,6 +72,7 @@
         var seen_tags_set = [];
         var tag_cloud_html = [];
         data = JSON.parse(localStorage.getItem("data"))
+        $("#item_result_count").html("Total number of items: " + data.length);
         for (var item_index = 0; item_index < data.length - 1; item_index++) {
             for (var tag_item_index = 0; tag_item_index < data[item_index]['tags'].length - 1; tag_item_index++) {
                 if (!seen_tags_set.includes(data[item_index]['tags'][tag_item_index].toLowerCase())) {
@@ -84,15 +86,16 @@
             seen_tags_dict[seen_tags_set[i]] = null;
 
             //For sidebar
-            tag_cloud_html.push(`<li class="nav-item" onclick="show_items_of(this,'` + seen_tags_set[i] + `')">
+            tag_cloud_html.push(`<li class="nav-item" onclick="show_items_of(this,'` + seen_tags_set[i] + `','`+i+`')">
             <a class="nav-link center" href="#">
-              <p>` + seen_tags_set[i] + `</p>
+              <p>` + seen_tags_set[i] + ` <span id="tag_item_count-`+i+`" class="tag_item_count"></span></p>
             </a>
           </li>`)
         }
 
         seen_tags_set = []
-        $("#tags_side_bar").html(tag_cloud_html.sort());
+        // $("#tags_side_bar").html(tag_cloud_html.sort());
+        $("#tags_side_bar").html(tag_cloud_html);
         tag_cloud_html = []
     }
 
@@ -103,7 +106,7 @@
         withLinks: true
     };
 
-    function show_items_of(e, tag) {
+    function show_items_of(e, tag, index) {
         $(".nav-item").removeClass("active");
         $(e).addClass("active");
         $.get("/cat/search/attribute?tags=(" + tag + ")", function(data) {
@@ -111,6 +114,8 @@
             data = JSON.parse(data)
             var html_to_add = "";
             var item_details_card_html = ""
+            $(".tag_item_count").html("");
+            $("#tag_item_count-"+index).html("("+data.length+")");
             for (var i = data.length - 1; i >= 0; i--) {
                 html_to_add += `
              <div class="card">
@@ -122,7 +127,7 @@
     </div>
   </div>`
     item_details_card_html += `<div id="` + i + `" class="row id_row" style="display:none;">
-    <div class="col s6">
+    <div class="col s12">
       <div class="card white">
         <div class="card-content black-text">
           <span class="card-title">` + data[i]['NAME'] + `</span><hr>
@@ -130,9 +135,7 @@
         </div>
         <div class="card-action">
           <div id="latest_data_` + i + `"></div>
-          <!--a class="blue-text lighten-1" href="#" onclick="show_latest_data('` + i + `','` + data[i]['latestResourceData'] + `')">Latest Data ` + i + `</a-->
           <a class="blue-text lighten-1" onclick="show_latest_data('` + i + `','` + data[i]['latestResourceData'] + `')">Latest Data</a>
-          <!--a class="blue-text lighten-1" href="#" target="_blank">Entire Detail</a-->
           <iframe id="iframe-` + i + `" width="100%" height="100%" src="` + data[i]['latestResourceData'] + `" style="display:none">
               <p>Your browser does not support iframes.</p>
           </iframe>
@@ -145,6 +148,19 @@
             $("#searched_items").html(html_to_add)
             $("#item_details_card").html(item_details_card_html)
         });
+    }
+
+    function get_location() { //user clicks button
+        if ("geolocation" in navigator){ //check geolocation available 
+            //try to get user current location using getCurrentPosition() method
+            navigator.geolocation.getCurrentPosition(function(position){ 
+                    $.get("https://nominatim.openstreetmap.org/reverse?format=json&lon="+position.coords.longitude+"&lat="+position.coords.latitude, function(data) {
+                        $("#location").html("<i class='material-icons'>location_on</i> " + data['display_name']);
+                    });
+                });
+        }else{
+            console.log("Browser doesn't support geolocation!");
+        }
     }
 
     function objToString(obj) {

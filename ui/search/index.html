@@ -25,11 +25,7 @@
     <!-- Material Kit CSS -->
     <link href="../../assets/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
     <style type="text/css">
-        #details_card {
-            position: absolute;
-            top: 0;
-            z-index: 100;
-        }
+     
     </style>
 </head>
 
@@ -42,20 +38,23 @@
 
       Tip 2: you can also add an image using data-image tag
   -->
-            <div class="logo">
+            <div class="logo center">
                 <a href="#" class="simple-text logo-mini">
-                    IUDX
+                    IUDX 
                 </a>
                 <a href="#" class="simple-text logo-normal">
                     Catalogue
                 </a>
+                <hr>
+                <a class="waves-effect waves-light btn-large deep-purple darken-1" style="color:white" onclick="refresh_tags()">
+                            <!--<i class="material-icons right">refresh</i-->Refresh tags</a>
+                            <!-- <hr><span id="item_result_count"></span> -->
+
             </div>
-            <div class="sidebar-wrapper">
-                <!-- <div class="input-field col s12">
-          <i class="material-icons prefix">search</i>
-          <input type="text" id="autocomplete-input" class="autocomplete">
-          <label for="autocomplete-input">Search</label>
-        </div> -->
+            
+            <!-- <div class="logo center"></div> -->
+            <div class="sidebar-wrapper nav">
+
                 <ul id="tags_side_bar" class="nav">
 
                     <!-- your sidebar here -->
@@ -64,7 +63,7 @@
         </div>
         <div class="main-panel white">
             <!-- Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top">
+                 <nav id="navbar"  class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top">
                 <div class="container-fluid">
                     <div class="navbar-wrapper">
                         <br>
@@ -79,23 +78,23 @@
                                 </div>
                             </div>
                         </div>&nbsp;&nbsp;&nbsp;
-                        <a class="btn-floating btn-large waves-effect waves-light orange darken-3" onclick='show_items_of("false",$("#autocomplete-input").val())'><i class="material-icons">search</i></a> &nbsp;&nbsp;&nbsp;
-                        <a class="waves-effect waves-light btn-large deep-purple darken-1 " style="color:white" onclick="refresh_tags()">
-                            <!--<i class="material-icons right">refresh</i-->Refresh tags</a>
+                        <a class="btn-floating btn-large waves-effect waves-light orange darken-3" onclick='show_items_of("false",$("#autocomplete-input").val())'><i class="material-icons">search</i></a> &nbsp;&nbsp;&nbsp;<span id="item_result_count"></span>
+                        <!-- <span id="location"></span> -->
                     </div>
-
+                    </div>
             </nav>
             <!-- End Navbar -->
             <div class="content">
+                <span id="location"></span>
                 <div class="container-fluid">
-                    <hr>
+                <hr>        
                     <div class="row">
                         <div class="col s6">
                             <div id="searched_items">
                                 <!-- Display searched items       -->
                             </div>
                         </div>
-                        <div class="col s5">
+                        <div id="item_details_card_div" class="col s5">
                             <div id="item_details_card">
                                 <!-- Display item details -->
                             </div>
@@ -108,6 +107,7 @@
         </div>
     </div>
     </div>
+
 </body>
 <!-- Compiled and minified JavaScript -->
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -116,6 +116,7 @@
 <!-- Core -->
 <script type="text/javascript">
     M.AutoInit();
+    get_location();
     populate_side_bar();
     $(document).ready(function() {
         // pushpin
